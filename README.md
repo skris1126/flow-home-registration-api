@@ -29,7 +29,23 @@ container).
 
 ## Configuration
 
-See `.env.example`:
+Defaults live in `config/application.yml`:
+
+```yaml
+postgres:
+  dsn: postgresql://flow_home:flow_home@localhost:5432/flow_home_auth
+
+dashboard:
+  origins:
+    - http://localhost:8081
+    - http://localhost:5173
+```
+
+Environment variables override the file when set (see `.env.example`), the
+same precedence Spring Boot uses between `application.yml` and the
+environment:
 
 - `POSTGRES_DSN` — connection string for the `users` table
 - `DASHBOARD_ORIGINS` — comma-separated CORS origins allowed to call this API
+- `CONFIG_FILE` — path to an alternate YAML config file (defaults to
+  `config/application.yml`)

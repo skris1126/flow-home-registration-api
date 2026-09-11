@@ -1,5 +1,3 @@
-import os
-
 import bcrypt
 import psycopg
 from fastapi import FastAPI, HTTPException
@@ -7,24 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr, Field, field_validator
 import re
 
-
-POSTGRES_DSN = os.getenv("POSTGRES_DSN", "postgresql://flow_home:flow_home@localhost:5432/flow_home_auth")
+from app.config import DASHBOARD_ORIGINS, POSTGRES_DSN
 
 PIN_PATTERN = re.compile(r"^\d{4}$")
 
 app = FastAPI(title="Registration Service")
 
-dashboard_origins = [
-    origin.strip()
-    for origin in os.getenv(
-        "DASHBOARD_ORIGINS",
-        "http://localhost:8081,http://localhost:5173,http://127.0.0.1:8081,http://127.0.0.1:5173",
-    ).split(",")
-    if origin.strip()
-]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=dashboard_origins,
+    allow_origins=DASHBOARD_ORIGINS,
     allow_methods=["GET", "POST", "OPTIONS"],
     allow_headers=["*"],
 )
