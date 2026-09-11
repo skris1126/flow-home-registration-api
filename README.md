@@ -1,4 +1,4 @@
-# Registration Service
+# flow-home-registration-api
 
 Standalone FastAPI service that owns account creation for Flow Home. It is the
 source of truth for the `users` table schema — it ships and runs the Flyway
@@ -15,6 +15,9 @@ migrations that [`flow-home-login-api`](../flow-home-login-api) depends on.
 docker network create flow_home_auth_net   # once, shared with flow-home-login-api
 docker compose up --build
 ```
+
+The compose service is still named `registration-service` internally; the
+running container is `flow-home-registration-api`.
 
 This starts Postgres, runs the Flyway migrations in `db/migrations/`, and
 serves the API on `http://localhost:8091`.

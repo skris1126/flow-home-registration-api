@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - registration-service-postgres:/var/lib/postgresql/data
+      - flow-home-registration-api-postgres:/var/lib/postgresql/data
     networks:
       - auth-net
     healthcheck:
@@ -26,7 +26,7 @@ services:
 
   flyway:
     image: flyway/flyway:10-alpine
-    container_name: registration-service-flyway
+    container_name: flow-home-registration-api-flyway
     depends_on:
       postgres:
         condition: service_healthy
@@ -39,7 +39,7 @@ services:
   registration-service:
     build:
       context: .
-    container_name: registration-service
+    container_name: flow-home-registration-api
     environment:
       POSTGRES_DSN: postgresql://flow_home:flow_home@postgres:5432/flow_home_auth
       DASHBOARD_ORIGINS: http://localhost:8081,http://localhost:5173,http://127.0.0.1:8081,http://127.0.0.1:5173
@@ -54,5 +54,5 @@ services:
       - auth-net
 
 volumes:
-  registration-service-postgres:
-    name: registration-service-postgres
+  flow-home-registration-api-postgres:
+    name: flow-home-registration-api-postgres
