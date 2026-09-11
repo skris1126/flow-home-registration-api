@@ -1,0 +1,58 @@
+networks:
+  auth-net:
+    name: flow_home_auth_net
+    external: true
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: flow_home_auth
+      POSTGRES_USER: flow_home
+      POSTGRES_PASSWORD: flow_home
+    ports:
+      - "5432:5432"
+    volumes:
+      - registration-service-postgres:/var/lib/postgresql/data
+    networks:
+      - auth-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flow_home -d flow_home_auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: registration-service-flyway
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: -url=jdbc:postgresql://postgres:5432/flow_home_auth -user=flow_home -password=flow_home -connectRetries=10 -baselineOnMigrate=true migrate
+    volumes:
+      - ./db/migrations:/flyway/sql
+    networks:
+      - auth-net
+
+  registration-service:
+    build:
+      context: .
+    container_name: registration-service
+    environment:
+      POSTGRES_DSN: postgresql://flow_home:flow_home@postgres:5432/flow_home_auth
+      DASHBOARD_ORIGINS: http://localhost:8081,http://localhost:5173,http://127.0.0.1:8081,http://127.0.0.1:5173
+    ports:
+      - "8091:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    networks:
+      - auth-net
+
+volumes:
+  registration-service-postgres:
+    name: registration-service-postgres

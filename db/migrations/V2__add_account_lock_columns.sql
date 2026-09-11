@@ -1,0 +1,3 @@
+ALTER TABLE users
+    ADD COLUMN failed_login_attempts SMALLINT NOT NULL DEFAULT 0,
+    ADD COLUMN locked BOOLEAN NOT NULL DEFAULT false;
